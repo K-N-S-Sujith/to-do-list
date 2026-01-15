@@ -1,4 +1,3 @@
-
 function view() {
   const input = document.getElementById("password");
   input.type = input.type === "password" ? "text" : "password";
@@ -9,17 +8,16 @@ function viewSignup() {
   input.type = input.type === "password" ? "text" : "password";
 }
 
-
-function move(){
+function move() {
   let cover = document.getElementById("cover");
-  cover.style.right = cover.style.right === "20vw" ? "50vw" :"20vw";
-  cover.style.borderRadius =  cover.style.borderRadius == "25px 0px 0px 25px" ? "0px 25px 25px 0px":"25px 0px 0px 25px" ;
+  cover.style.right = cover.style.right === "20vw" ? "50vw" : "20vw";
+  cover.style.borderRadius =
+    cover.style.borderRadius === "25px 0px 0px 25px"
+      ? "0px 25px 25px 0px"
+      : "25px 0px 0px 25px";
 }
 
-
-
-
-// ---------- LOGIN ----------
+/* ================= LOGIN ================= */
 function login(e) {
   e.preventDefault();
 
@@ -27,7 +25,7 @@ function login(e) {
   const password = document.getElementById("password").value;
   const output = document.getElementById("output");
 
-  fetch("http://localhost:5000/login", {
+  fetch("https://to-do-list-xrbb.onrender.com/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, password })
@@ -37,20 +35,25 @@ function login(e) {
       if (data.userId) {
         localStorage.setItem("userId", data.userId);
         localStorage.setItem("username", data.username);
+
         output.style.color = "green";
         output.innerText = "Login successful";
 
-      setTimeout(() => {
-        window.location.href = "to-do-list.html"; // change file name if needed
-      }, 800);
+        setTimeout(() => {
+          window.location.href = "to-do-list.html";
+        }, 800);
       } else {
         output.style.color = "red";
         output.innerText = data.message;
       }
+    })
+    .catch(() => {
+      output.style.color = "red";
+      output.innerText = "Server error. Try again.";
     });
 }
 
-// ---------- SIGNUP ----------
+/* ================= SIGNUP ================= */
 function signup(e) {
   e.preventDefault();
 
@@ -58,14 +61,18 @@ function signup(e) {
   const password = document.getElementById("su-password").value;
   const output = document.getElementById("output2");
 
-  fetch("http://localhost:5000/signup", {
+  fetch("https://to-do-list-xrbb.onrender.com/signup", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, password })
   })
     .then(res => res.json())
     .then(data => {
-      output.style.color = "green";
+      output.style.color = data.message.includes("successful") ? "green" : "red";
       output.innerText = data.message;
+    })
+    .catch(() => {
+      output.style.color = "red";
+      output.innerText = "Server error. Try again.";
     });
 }

@@ -4,7 +4,9 @@ const addBtn = document.getElementById("addBtn");
 const taskList = document.getElementById("taskList");
 
 const userId = localStorage.getItem("userId");
-const API_URL = "http://localhost:5000/todos";
+
+// ✅ CHANGED HERE (Render backend URL)
+const API_URL = "https://to-do-list-xrbb.onrender.com/todos";
 
 // Block if not logged in
 if (!userId) {
@@ -65,11 +67,7 @@ function renderTodo(todo) {
         disabled
       />
 
-      ${
-        isOverdue
-          ? `<span class="due-date overdue">Overdue</span>`
-          : ""
-      }
+      ${isOverdue ? `<span class="due-date overdue">Overdue</span>` : ""}
     </div>
 
     <div class="actions">
