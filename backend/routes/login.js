@@ -1,15 +1,15 @@
 const express = require("express");
-const mysql = require("mysql2");
 const bcrypt = require("bcrypt");
 const cors = require("cors");
 
-const app = express.Router();
-app.use(cors());
-app.use(express.json());
+const router = express.Router();
+router.use(cors());
+router.use(express.json());
 
 const db = require("../db");
 
-app.post("/signup", async (req, res) => {
+/* ---------- SIGNUP ---------- */
+router.post("/signup", async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
@@ -19,39 +19,51 @@ app.post("/signup", async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const sql = "INSERT INTO users (username, password) VALUES (?, ?)";
-    db.query(sql, [username, hashedPassword], err => {
-      if (err) {
-        if (err.code === "ER_DUP_ENTRY") {
-          return res.status(400).json({ message: "Username already exists" });
-        }
-        return res.status(500).json(err);
-      }
+    const query = `
+      INSERT INTO users (username, password)
+      VALUES ($1, $2)
+      RETURNING id
+    `;
 
-      res.json({ message: "Signup successful" });
+    const result = await db.query(query, [username, hashedPassword]);
+
+    res.json({
+      message: "Signup successful",
+      userId: result.rows[0].id
     });
+
   } catch (err) {
-    res.status(500).json(err);
+    // PostgreSQL duplicate username error
+    if (err.code === "23505") {
+      return res.status(400).json({ message: "Username already exists" });
+    }
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
-// ---------- LOGIN ----------
-app.post("/login", (req, res) => {
+/* ---------- LOGIN ---------- */
+router.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  const sql = "SELECT * FROM users WHERE username = ?";
-  db.query(sql, [username], async (err, result) => {
-    if (err) return res.status(500).json(err);
+  try {
+    const query = `
+      SELECT id, username, password
+      FROM users
+      WHERE username = $1
+    `;
 
-    if (result.length === 0) {
+    const result = await db.query(query, [username]);
+
+    if (result.rows.length === 0) {
       return res.status(401).json({ message: "Invalid username or password" });
     }
 
-    const user = result[0];
+    const user = result.rows[0];
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
@@ -63,13 +75,11 @@ app.post("/login", (req, res) => {
       userId: user.id,
       username: user.username
     });
-  });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
-// ---------- SERVER ----------
-// app.listen(5000, () => {
-//   console.log("Server running on port 5000");
-// });
-
-
-module.exports = app;
+module.exports = router;

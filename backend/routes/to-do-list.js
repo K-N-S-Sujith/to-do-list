@@ -4,46 +4,63 @@ const db = require("../db");
 const router = express.Router();
 
 /* ---------- CREATE TODO ---------- */
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   const { userId, title, endDate } = req.body;
 
   if (!userId || !title) {
     return res.status(400).json({ message: "userId and title required" });
   }
 
-  const sql =
-    "INSERT INTO todos (user_id, title, end_date) VALUES (?, ?, ?)";
+  try {
+    const query = `
+      INSERT INTO todos (user_id, title, end_date)
+      VALUES ($1, $2, $3)
+      RETURNING id
+    `;
 
-  db.query(sql, [userId, title, endDate || null], (err, result) => {
-    if (err) return res.status(500).json(err);
-    res.json({ message: "Todo added", id: result.insertId });
-  });
+    const result = await db.query(query, [
+      userId,
+      title,
+      endDate || null
+    ]);
+
+    res.json({
+      message: "Todo added",
+      id: result.rows[0].id
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
 /* ---------- READ TODOS ---------- */
-router.get("/:userId", (req, res) => {
+router.get("/:userId", async (req, res) => {
   const { userId } = req.params;
 
-  const sql = `
-    SELECT 
-      id,
-      user_id,
-      title,
-      is_completed,
-      DATE_FORMAT(end_date, '%Y-%m-%d') AS end_date
-    FROM todos
-    WHERE user_id = ?
-    ORDER BY end_date ASC
-  `;
+  try {
+    const query = `
+      SELECT 
+        id,
+        user_id,
+        title,
+        is_completed,
+        TO_CHAR(end_date, 'YYYY-MM-DD') AS end_date
+      FROM todos
+      WHERE user_id = $1
+      ORDER BY end_date ASC
+    `;
 
-  db.query(sql, [userId], (err, rows) => {
-    if (err) return res.status(500).json(err);
-    res.json(rows);
-  });
+    const result = await db.query(query, [userId]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
 /* ---------- UPDATE TODO (EDIT) ---------- */
-router.put("/:id", (req, res) => {
+router.put("/:id", async (req, res) => {
   const { title, endDate } = req.body;
   const { id } = req.params;
 
@@ -51,39 +68,59 @@ router.put("/:id", (req, res) => {
     return res.status(400).json({ message: "Title required" });
   }
 
-  const sql =
-    "UPDATE todos SET title = ?, end_date = ? WHERE id = ?";
+  try {
+    const query = `
+      UPDATE todos
+      SET title = $1, end_date = $2
+      WHERE id = $3
+    `;
 
-  db.query(sql, [title, endDate || null, id], err => {
-    if (err) return res.status(500).json(err);
+    await db.query(query, [
+      title,
+      endDate || null,
+      id
+    ]);
+
     res.json({ message: "Todo updated" });
-  });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
 /* ---------- COMPLETE / UNCOMPLETE ---------- */
-router.put("/:id/complete", (req, res) => {
+router.put("/:id/complete", async (req, res) => {
   const { is_completed } = req.body;
   const { id } = req.params;
 
-  const sql =
-    "UPDATE todos SET is_completed = ? WHERE id = ?";
+  try {
+    const query = `
+      UPDATE todos
+      SET is_completed = $1
+      WHERE id = $2
+    `;
 
-  db.query(sql, [is_completed, id], err => {
-    if (err) return res.status(500).json(err);
+    await db.query(query, [is_completed, id]);
     res.json({ message: "Todo status updated" });
-  });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
 /* ---------- DELETE ---------- */
-router.delete("/:id", (req, res) => {
+router.delete("/:id", async (req, res) => {
   const { id } = req.params;
 
-  const sql = "DELETE FROM todos WHERE id = ?";
+  try {
+    const query = `DELETE FROM todos WHERE id = $1`;
+    await db.query(query, [id]);
 
-  db.query(sql, [id], err => {
-    if (err) return res.status(500).json(err);
     res.json({ message: "Todo deleted" });
-  });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
 module.exports = router;
