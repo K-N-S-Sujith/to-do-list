@@ -1,0 +1,133 @@
+* {
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background: #f4f4f4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  width: 450px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* -------- ADD TASK -------- */
+.input-section {
+  display: flex;
+  gap: 8px;
+}
+
+#taskInput,
+#endDate {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+#taskInput {
+  flex: 1;
+}
+
+#addBtn {
+  padding: 10px 16px;
+  background: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#addBtn:hover {
+  background: #4338ca;
+}
+
+/* -------- TASK LIST -------- */
+#taskList {
+  list-style: none;
+  margin-top: 20px;
+  padding: 0;
+}
+
+.task {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.task-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.task.completed span {
+  text-decoration: line-through;
+  color: gray;
+}
+
+.due-date {
+  font-size: 12px;
+  color: #666;
+}
+
+/* Overdue */
+.overdue {
+  color: red;
+  font-weight: bold;
+}
+
+.actions button {
+  margin-left: 5px;
+  border: none;
+  cursor: pointer;
+  padding: 5px 8px;
+  border-radius: 4px;
+}
+
+.complete-btn {
+  background: #22c55e;
+  color: white;
+}
+
+.delete-btn {
+  background: #ef4444;
+  color: white;
+}
+
+.edit-title,
+.edit-date {
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.edit-title:enabled,
+.edit-date:enabled {
+  border-bottom: 1px solid #4f46e5;
+  background: #f9f9ff;
+}
+
+.edit-btn {
+  background: #f59e0b;
+  color: white;
+}
+
+.save-btn {
+  background: #10b981;
+  color: white;
+}

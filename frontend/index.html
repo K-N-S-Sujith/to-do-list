@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Auth System</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="card" id="cover"></div>
+
+<div class="container">
+
+  <!-- LOGIN -->
+  <form class="card" id="Login">
+    <h2>Sign In</h2>
+
+    <input type="text" placeholder="Username" id="username" required>
+
+    <div class="password-box">
+      <input type="password" placeholder="Password" id="password" required>
+      <span class="eye" onclick="view()">👁️</span>
+    </div>
+
+    <button onclick="login(event)">Sign In</button>
+    <div id="output"></div>
+
+    <p class="link" onclick="move()">Don’t have an account? Sign Up</p>
+  </form>
+
+  <!-- SIGNUP -->
+  <form class="card" id="Sign-up">
+    <h2>Sign Up</h2>
+
+    <input type="text" placeholder="Username" id="su-username" required>
+
+    <div class="password-box">
+      <input type="password" placeholder="Password" id="su-password" required>
+      <span class="eye" onclick="viewSignup()">👁️</span>
+    </div>
+
+    <button onclick="signup(event)">Create Account</button>
+    <div id="output2"></div>
+
+    <p class="link" onclick="move()">Already have an account? Sign In</p>
+  </form>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
