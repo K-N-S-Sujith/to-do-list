@@ -7,8 +7,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use("/login", require("./routes/auth"));
-app.use("/todos", require("./routes/todos"));
+app.use("/login", require("./routes/login"));
+app.use("/todos", require("./routes/to-do-list"));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
