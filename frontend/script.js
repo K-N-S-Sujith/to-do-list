@@ -25,7 +25,7 @@ function login(e) {
   const password = document.getElementById("password").value;
   const output = document.getElementById("output");
 
-  fetch("https://to-do-list-xrbb.onrender.com/login", {
+  fetch("https://to-do-list-xrbb.onrender.com/login/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, password })
@@ -61,7 +61,7 @@ function signup(e) {
   const password = document.getElementById("su-password").value;
   const output = document.getElementById("output2");
 
-  fetch("https://to-do-list-xrbb.onrender.com/signup", {
+  fetch("https://to-do-list-xrbb.onrender.com/login/signup", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, password })
